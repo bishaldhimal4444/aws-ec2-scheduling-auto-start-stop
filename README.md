@@ -35,7 +35,7 @@ How to Add the Tag
 ## Step-2: Create IAM Role (Least Privilege): 
 The Lambda function needs an IAM Role with exactly the permissions it requires — nothing more. The stop/start permission is additionally restricted to only work on instances with the AutoSchedule=true tag.
 
-Create the Role
+##### Create the Role
 6.	Go to IAM -> Roles -> Create Role
 7.	Trusted entity type: AWS Service -> Lambda -> Next
 8.	Skip attaching managed policies for now -> Next
@@ -70,12 +70,12 @@ Create the Role
   ]
 }
 ```
-> [!Why this policy is secure]  
-> DescribeInstances needs Resource: * because it is a list operation. StartInstances and StopInstances are restricted by a tag condition — IAM independently enforces that only AutoSchedule=true instances can be touched, even if Lambda code had a bug.
+> [!NOTE]  
+> Why this policy is secure?: DescribeInstances needs Resource: * because it is a list operation. StartInstances and StopInstances are restricted by a tag condition — IAM independently enforces that only AutoSchedule=true instances can be touched, even if Lambda code had a bug.
 
 
 ## Step 3 — Create the Lambda Function
-Create Function in AWS Console \
+##### Create Function in AWS Console \
 14.	Go to Lambda -> Functions -> Create Function \
 15.	Select: Author from scratch \
 16.	Function name: ec2-start-stop \
@@ -83,7 +83,7 @@ Create Function in AWS Console \
 18.	Execution role: Use an existing role -> ec2-scheduler-lambda-role \
 19.	Click Create Function
 
-Update Basic Settings \
+##### Update Basic Settings \
 20.	Go to Configuration -> General Configuration -> Edit \
 21.	Set Timeout to 0 min 30 sec \
 22.	Memory: 128 MB \
@@ -168,22 +168,14 @@ def lambda_handler(event, context):
 ## Step 4 — Test the Lambda
 Test manually before connecting EventBridge. Always test stop first (safer).
 
-Test Event: Stop \
+##### Test Event: Stop \
 24.	Lambda console -> Code tab -> Test -> Create new test event \
 25.	Event name: stop-ec2 \
 26.	Event JSON: ```{ "action": "stop" }``` \
 27.	Click Save -> Test \
-28.	Expected response:
-```
-{
-  "message": "Stopped 1 instance(s)",
-  "instances": [
-    { "id": "i-0ed579eafdd73266f", "name": "schedule_instance-bsltest" }
-  ]
-}
-```
 
-Test Event: Start \
+
+##### Test Event: Start \
 29.	Create another test event named: start-ec2 \
 30.	Event JSON: { "action": "start" } \
 31.	Run it and confirm instance moves to Running state in EC2 console
@@ -191,7 +183,7 @@ Test Event: Start \
 ## Step 5 — EventBridge Scheduler
 Create two EventBridge Scheduler rules. Set the timezone explicitly to avoid UTC confusion.
 
-Rule 1 — Start at 8 AM \
+##### Rule 1 — Start at 8 AM \
 32.	Amazon EventBridge -> Scheduler -> Schedules -> Create Schedule \
 33.	Schedule name: my-ec2-start \
 34.	Schedule type: Recurring -> Cron-based schedule \
@@ -203,7 +195,7 @@ Rule 1 — Start at 8 AM \
 40.	Action after completion: NONE \
 41.	Click Next -> Next -> Create Schedule
 
-Rule 2 — Stop at 8 PM \
+##### Rule 2 — Stop at 8 PM \
 42.	Create another schedule named: my-ec2-stop \
 43.	Same settings but: \
 •	Cron expression: 0 20 * * ? * \
