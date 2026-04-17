@@ -233,8 +233,7 @@ These four additions make your setup genuinely production-ready: email alerting 
 53.	Next -> In Alarm -> choose SNS topic: ec2-scheduler-alerts \
 54.	Alarm name: ec2-scheduler-lambda-errors -> Create Alarm
 > [!NOTE]
-> What this gives you
-> If Lambda fails at 8 AM (permissions error, timeout, API throttle), you receive an email within 1-2 minutes. Without this, instances stay in the wrong state all day with zero visibility.
+> What this gives you? : If Lambda fails at 8 AM (permissions error, timeout, API throttle), you receive an email within 1-2 minutes. Without this, instances stay in the wrong state all day with zero visibility.
 
 
 #####  6.3  Dead Letter Queue (DLQ)
