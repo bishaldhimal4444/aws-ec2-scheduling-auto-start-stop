@@ -70,10 +70,9 @@ Create the Role
   ]
 }
 ```
-```
-Why this policy is secure
-DescribeInstances needs Resource: * because it is a list operation. StartInstances and StopInstances are restricted by a tag condition — IAM independently enforces that only AutoSchedule=true instances can be touched, even if Lambda code had a bug.
-```
+> [!Why this policy is secure]  
+> DescribeInstances needs Resource: * because it is a list operation. StartInstances and StopInstances are restricted by a tag condition — IAM independently enforces that only AutoSchedule=true instances can be touched, even if Lambda code had a bug.
+
 
 ## Step 3 — Create the Lambda Function
 Create Function in AWS Console \
@@ -233,10 +232,9 @@ These four additions make your setup genuinely production-ready: email alerting 
 52.	Condition: Greater than 0 for 1 datapoint in 1 minute \
 53.	Next -> In Alarm -> choose SNS topic: ec2-scheduler-alerts \
 54.	Alarm name: ec2-scheduler-lambda-errors -> Create Alarm
-```
-What this gives you
-If Lambda fails at 8 AM (permissions error, timeout, API throttle), you receive an email within 1-2 minutes. Without this, instances stay in the wrong state all day with zero visibility.
-```
+> [!What this gives you]  
+> If Lambda fails at 8 AM (permissions error, timeout, API throttle), you receive an email within 1-2 minutes. Without this, instances stay in the wrong state all day with zero visibility.
+
 
 #####  6.3  Dead Letter Queue (DLQ)
 55.	Go to SQS -> Create Queue -> Type: Standard \
@@ -244,15 +242,16 @@ If Lambda fails at 8 AM (permissions error, timeout, API throttle), you receive 
 57.	Lambda -> Configuration -> Asynchronous Invocation -> Edit \
 58.	Dead-letter queue service: SQS -> select ec2-scheduler-dlq \
 59.	Maximum age of event: 1 hour  |  Retry attempts: 2 -> Save
-```
-Why a DLQ matters
-EventBridge invokes Lambda asynchronously. If Lambda fails with no DLQ, the failed event is permanently lost with no record. A DLQ captures failed invocations in SQS where you can inspect or replay them.
-```
+> [!NOTE]  
+> Why a DLQ matters? : EventBridge invokes Lambda asynchronously. If Lambda fails with no DLQ, the failed event is permanently lost with no record. A DLQ captures failed invocations in SQS where you can inspect or replay them.
+
 
 ##### 6.4  CloudWatch Log Retention \
 60.	Go to CloudWatch -> Log Groups
 61.	Find: /aws/lambda/ec2-start-stop
 62.	Click Actions -> Edit Retention Setting -> 30 days -> Save
 
+> [!NOTE]  
+> Lambda logs are kept forever by default. A function running twice daily accumulates logs over months. 30 days of retention is sufficient for auditing and debugging purposes.
 
 
